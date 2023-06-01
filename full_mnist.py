@@ -7,7 +7,8 @@ from art.estimators.classification import TensorFlowV2Classifier
 from art.attacks.evasion import FastGradientMethod, ProjectedGradientDescentTensorFlowV2
 from tqdm import tqdm
 import os
-
+physical_devices = tf.config.list_physical_devices("GPU")
+print(physical_devices)
 from art.utils import load_mnist
 # Load MNIST dataset
 print("packages imported")
@@ -117,7 +118,7 @@ for norm, epsilons in attack_params:
 
         # Calculate accuracy and loss
         for x, y in tqdm(zip(x_test_attack, y_test_attack), total=len(y_test_attack), desc="Evaluating Adversarial Examples"):
-            predictions_adv = p.argmax(classifier.predict(np.expand_dims(x, axis=0)), axis=1)
+            predictions_adv = np.argmax(classifier.predict(np.expand_dims(x, axis=0)), axis=1)
             adv_correct += (predictions_adv == y).sum()
             total += 1
 
