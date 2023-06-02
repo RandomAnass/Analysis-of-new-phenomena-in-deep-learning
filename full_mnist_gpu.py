@@ -10,14 +10,17 @@ import os
 from art.utils import load_mnist
 
 # Set the number of GPUs to use
-num_gpus = 4
+
 
 # Set GPU devices
 physical_devices = tf.config.list_physical_devices("GPU")
-tf.config.experimental.set_visible_devices(physical_devices[:num_gpus], "GPU")
-logical_devices = tf.config.experimental.list_logical_devices("GPU")
-tf.distribute.OneDeviceStrategy(logical_devices[0])
-tf.distribute.MirroredStrategy(logical_devices)
+print("gpu", len(physical_devices))
+num_gpus = len(physical_devices)
+if num_gpus>0:
+    tf.config.experimental.set_visible_devices(physical_devices[:num_gpus], "GPU")
+    logical_devices = tf.config.experimental.list_logical_devices("GPU")
+    tf.distribute.OneDeviceStrategy(logical_devices[0])
+    tf.distribute.MirroredStrategy(logical_devices)
 
 # Load MNIST dataset
 (x_train, y_train), (x_test, y_test), min_pixel_value, max_pixel_value = load_mnist()
