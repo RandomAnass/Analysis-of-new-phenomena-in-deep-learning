@@ -61,7 +61,7 @@ classifier = TensorFlowV2Classifier(
 classifier_history = classifier.fit(x_train, y_train, batch_size=64, nb_epochs=3,verbose=2)
 predictions = classifier.predict(x_test)
 accuracy = np.sum(np.argmax(predictions, axis=1) == np.argmax(y_test, axis=1)) / len(y_test)
-print("Accuracy on benign test examples: {}%".format(accuracy * 100))
+print("Accuracy on test examples: {}%".format(accuracy * 100))
 
 import numpy as np
 from tqdm import tqdm
