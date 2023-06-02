@@ -53,7 +53,7 @@ def train_step(model, images, labels):
 
 # Create the CNN model and optimizer
 model = simple_Conv(n_hidden, kernel_size=28, padding_size=padding_size)
-optimizer = tf.keras.optimizers.SGD(learning_rate=0.1, momentum=0.9, decay=5e-4)
+optimizer = tf.keras.optimizers.legacy.SGD(learning_rate=0.1, momentum=0.9, decay=5e-4)
 loss_object = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
 
 # Create the ART classifier
