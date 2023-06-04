@@ -248,11 +248,11 @@ for model, model_name in zip(models, model_names.keys()):
             x_test_attack = []
             y_test_attack = []
 
-            x_train_attack = attack.generate(x=x_train[:3000])
-            y_train_attack = np.copy(y_train[:3000])
+            x_train_attack = attack.generate(x=x_train)
+            y_train_attack = np.copy(y_train)
 
-            x_test_attack = attack.generate(x=x_test[:3000])
-            y_test_attack = np.copy(y_test[:3000])
+            x_test_attack = attack.generate(x=x_test)
+            y_test_attack = np.copy(y_test) # [:3000]
 
             x_train_attack = np.array(x_train_attack)
             #y_train_attack = np.array(y_train_attack)
