@@ -13,7 +13,7 @@ import pickle
 
 fashion_mnist = tf.keras.datasets.fashion_mnist
 (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
-print("data loaded"
+print("data loaded")
 
 # Normalize the pixel values between 0 and 1
 x_train = x_train / 255.0
