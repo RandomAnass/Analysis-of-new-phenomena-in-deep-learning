@@ -120,7 +120,7 @@ def simple__RNN():
 
 print("creating models")
 model_names = {'simple_FC':simple_FC, 'simple_Conv':simple_Conv, 'simple_Conv_NL':simple_Conv_NL,
-               'simple_Conv_max':simple_Conv_max, 'simple__RNN':simple__RNN , 'simple_FC_2':simple_FC_2, 'simple_Conv_2':simple_Conv_2
+               'simple_Conv_max':simple_Conv_max, 'simple__RNN':simple__RNN , 'simple_FC_2':simple_FC_2, 'simple_Conv_2':simple_Conv_2}
 
 padding_size = 0 #padding_sizes[3]
 n_hidden = 1024 #1000
