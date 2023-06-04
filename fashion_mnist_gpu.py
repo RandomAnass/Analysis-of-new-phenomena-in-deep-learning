@@ -26,11 +26,25 @@ x_test = x_test.reshape(-1, 28, 28, 1)
 # Convert the labels to one-hot encoding
 y_train = tf.keras.utils.to_categorical(y_train, num_classes=10)
 y_test = tf.keras.utils.to_categorical(y_test, num_classes=10)
-print(tf.test.gpu_device_name())
-physical_devices = tf.config.list_physical_devices("GPU")
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
-tf.config.list_physical_devices("GPU")
-print("gpus:", physical_devices)
+
+#print(tf.test.gpu_device_name())
+
+#ValueError: Memory growth cannot differ between GPU devices
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    try:
+        # Currently, memory growth needs to be the same across GPUs
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        logical_gpus = tf.config.list_logical_devices('GPU')
+        print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+    except RuntimeError as e:
+        # Memory growth must be set before GPUs have been initialized
+        print(e)
+#physical_devices = tf.config.list_physical_devices("GPU")
+#tf.config.experimental.set_memory_growth(physical_devices[0], True)
+#tf.config.list_physical_devices("GPU")
+#print("gpus:", physical_devices)
 
 def circular_padding(x, padding_size):
     # Perform circular padding on the input tensor
