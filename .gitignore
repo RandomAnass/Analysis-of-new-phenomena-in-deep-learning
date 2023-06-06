@@ -2,7 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+tmp/
+adversarial_data_/
 # C extensions
 *.so
 
