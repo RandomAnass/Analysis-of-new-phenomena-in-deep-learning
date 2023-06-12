@@ -209,16 +209,19 @@ for model, model_name in zip(models, model_names.keys()):
             x_test_attack = []
             y_test_attack = []
 
-            x_train_attack = attack.generate(x=x_train)
-            y_train_attack = np.copy(y_train)
+            x_train_attack = attack.generate(x=x_train[:10000])
+            y_train_attack = np.copy(y_train[:10000])
 
-            x_test_attack = attack.generate(x=x_test)
-            y_test_attack = np.copy(y_test) # [:3000]
+            x_test_attack = attack.generate(x=x_test[:5000])
+            y_test_attack = np.copy(y_test[:5000]) # [:3000]
 
             x_train_attack = np.array(x_train_attack)
             #y_train_attack = np.array(y_train_attack)
             x_test_attack = np.array(x_test_attack)
             #y_test_attack = np.array(y_test_attack)
+
+
+
 
 
             np.savez(os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}_train.npz"),
