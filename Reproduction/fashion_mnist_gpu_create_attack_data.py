@@ -195,7 +195,6 @@ for model, model_name in zip(models, model_names.keys()):
         input_shape=(28, 28, 1),
         clip_values=(0, 1),
     )
-    classifier.compile(optimizer=optimizer, loss=loss, reduction=tf.keras.losses.Reduction.NONE)
     # Iterate over the attack parameters and generate adversarial examples
     for norm, epsilons in attack_params:
         for epsilon in epsilons:
