@@ -192,6 +192,7 @@ for model, model_name in zip(models, model_names.keys()):
         input_shape=(28, 28, 1),
         clip_values=(0, 1),
     )
+    classifier.compile(optimizer=optimizer, loss=loss, reduction=tf.keras.losses.Reduction.NONE)
     # Iterate over the attack parameters and generate adversarial examples
     for norm, epsilons in attack_params:
         for epsilon in epsilons:
@@ -209,7 +210,9 @@ for model, model_name in zip(models, model_names.keys()):
             if os.path.exists(file_path_train) and os.path.exists(file_path_test):
                 print(f"Skipping creation of {file_path_train} and {file_path_test}")
                 continue
-
+            optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+            # NOTE: this is different from training
+            classifier.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
             gpus = tf.config.experimental.list_physical_devices('GPU')
             if gpus:
                 strategy = tf.distribute.MirroredStrategy()
@@ -224,7 +227,7 @@ for model, model_name in zip(models, model_names.keys()):
                 x_test_attack = attack.generate(x=x_test[:5000])
                 y_test_attack = np.copy(y_test[:5000])
 
-   
+
             x_train_attack = np.array(x_train_attack)
             #y_train_attack = np.array(y_train_attack)
             x_test_attack = np.array(x_test_attack)
