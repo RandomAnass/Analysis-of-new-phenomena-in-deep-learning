@@ -184,10 +184,13 @@ print("creating attack data")
 for model, model_name in zip(models, model_names.keys()):
     classifier = model[0]
     loss_object = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+    # NOTE: this is different from training
+
     classifier = TensorFlowV2Classifier(
         model=classifier,
         loss_object=loss_object,
-        #train_step=train_step,
+        optimizer=optimizer, # NOTE!!
         nb_classes=10,
         input_shape=(28, 28, 1),
         clip_values=(0, 1),
@@ -210,9 +213,6 @@ for model, model_name in zip(models, model_names.keys()):
             if os.path.exists(file_path_train) and os.path.exists(file_path_test):
                 print(f"Skipping creation of {file_path_train} and {file_path_test}")
                 continue
-            optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
-            # NOTE: this is different from training
-            classifier.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
             gpus = tf.config.experimental.list_physical_devices('GPU')
             if gpus:
                 strategy = tf.distribute.MirroredStrategy()
