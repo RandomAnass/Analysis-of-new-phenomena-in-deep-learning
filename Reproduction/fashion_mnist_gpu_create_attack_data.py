@@ -10,6 +10,10 @@ import os
 from tensorflow.keras import layers
 from art.estimators.classification import TensorFlowV2Classifier
 import pickle
+import subprocess
+import gpustat
+
+
 
 fashion_mnist = tf.keras.datasets.fashion_mnist
 (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
@@ -174,6 +178,13 @@ print("ART attacks")
 from art.config import ART_NUMPY_DTYPE
 os.environ["ART_NUMPY_DTYPE"] = str(ART_NUMPY_DTYPE)
 
+def monitor_gpu_usage():
+    while True:
+        subprocess.run(['gpustat', '-cp'], check=True)
+
+gpu_monitor_process = multiprocessing.Process(target=monitor_gpu_usage)
+gpu_monitor_process.start()
+
 # Define the attack parameters
 attack_params = [[np.inf, [0.05, 0.1,  0.15, 0.2, 0.25, 0.3]],[2, [0.5, 1, 1.5,  2.5, 3]]]
 save_dir = "adversarial_fashion_data"
@@ -201,6 +212,12 @@ for model, model_name in zip(models, model_names.keys()):
             attack_name = attack.__class__.__name__
             #model_name = "simple_Conv_28_10_1000"
 
+            file_path_train = os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}_train.npz")
+            file_path_test = os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}_test.npz")
+
+            if os.path.exists(file_path_train) and os.path.exists(file_path_test):
+                print(f"Skipping creation of {file_path_train} and {file_path_test}")
+                continue
             adv_correct = 0
             adv_loss = 0
             total = 0
@@ -208,6 +225,8 @@ for model, model_name in zip(models, model_names.keys()):
             y_train_attack = []
             x_test_attack = []
             y_test_attack = []
+
+            print(f"Current GPU utilization: {gpustat.GPUStatCollection().jsonify()}")
 
             x_train_attack = attack.generate(x=x_train[:10000])
             y_train_attack = np.copy(y_train[:10000])
@@ -220,15 +239,17 @@ for model, model_name in zip(models, model_names.keys()):
             x_test_attack = np.array(x_test_attack)
             #y_test_attack = np.array(y_test_attack)
 
+            np.savez(file_path_train, x_train_attack=x_train_attack, y_train_attack=y_train_attack)
+            np.savez(file_path_test, x_test_attack=x_test_attack, y_test_attack=y_test_attack)
 
-
-
-
-            np.savez(os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}_train.npz"),
-                     x_train_attack=x_train_attack, y_train_attack=y_train_attack)
-            np.savez(os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}_test.npz"),
-                     x_test_attack=x_test_attack, y_test_attack=y_test_attack)
+            #print(f"Created {file_path_train} and {file_path_test}")
+            #np.savez(os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}_train.npz"),
+            #         x_train_attack=x_train_attack, y_train_attack=y_train_attack)
+            #np.savez(os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}_test.npz"),
+            #         x_test_attack=x_test_attack, y_test_attack=y_test_attack)
 
             print(os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}"))
 
 print("Done")
+gpu_monitor_process.terminate()
+gpu_monitor_process.join()
