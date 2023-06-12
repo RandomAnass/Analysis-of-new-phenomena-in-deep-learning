@@ -41,10 +41,6 @@ if gpus:
     except RuntimeError as e:
         # Memory growth must be set before GPUs have been initialized
         print(e)
-#physical_devices = tf.config.list_physical_devices("GPU")
-#tf.config.experimental.set_memory_growth(physical_devices[0], True)
-#tf.config.list_physical_devices("GPU")
-#print("gpus:", physical_devices)
 
 def circular_padding(x, padding_size):
     # Perform circular padding on the input tensor
@@ -184,13 +180,10 @@ print("creating attack data")
 for model, model_name in zip(models, model_names.keys()):
     classifier = model[0]
     loss_object = tf.keras.losses.CategoricalCrossentropy(from_logits=True)
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
-    # NOTE: this is different from training
 
     classifier = TensorFlowV2Classifier(
         model=classifier,
         loss_object=loss_object,
-        optimizer=optimizer, # NOTE!!
         nb_classes=10,
         input_shape=(28, 28, 1),
         clip_values=(0, 1),
@@ -204,7 +197,6 @@ for model, model_name in zip(models, model_names.keys()):
                 attack = ProjectedGradientDescentTensorFlowV2(estimator=classifier, eps=epsilon, norm=norm)
 
             attack_name = attack.__class__.__name__
-            #model_name = "simple_Conv_28_10_1000"
 
             file_path_train = os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}_train.npz")
             file_path_test = os.path.join(save_dir, f"{model_name}_{attack_name}_{epsilon}_test.npz")
@@ -212,20 +204,12 @@ for model, model_name in zip(models, model_names.keys()):
             if os.path.exists(file_path_train) and os.path.exists(file_path_test):
                 print(f"Skipping creation of {file_path_train} and {file_path_test}")
                 continue
-            gpus = tf.config.experimental.list_physical_devices('GPU')
-            if gpus:
-                strategy = tf.distribute.MirroredStrategy()
-                with strategy.scope():
-                    x_train_attack = attack.generate(x=x_train[:10000])
-                    y_train_attack = np.copy(y_train[:10000])
-                    x_test_attack = attack.generate(x=x_test[:5000])
-                    y_test_attack = np.copy(y_test[:5000])
-            else:
-                x_train_attack = attack.generate(x=x_train[:10000])
-                y_train_attack = np.copy(y_train[:10000])
-                x_test_attack = attack.generate(x=x_test[:5000])
-                y_test_attack = np.copy(y_test[:5000])
 
+
+            x_train_attack = attack.generate(x=x_train[:10000])
+            y_train_attack = np.copy(y_train[:10000])
+            x_test_attack = attack.generate(x=x_test[:5000])
+            y_test_attack = np.copy(y_test[:5000])
 
             x_train_attack = np.array(x_train_attack)
             #y_train_attack = np.array(y_train_attack)
