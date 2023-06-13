@@ -62,7 +62,7 @@ def simple_Conv_NL(n_hidden,kernel_size=10):
 
     return model
 
-def simple_Conv_max(n_hidden, kernel_size=10):
+def simple_Conv_max(n_hidden, kernel_size=10,padding_size=0):
     model = Sequential()
     model.add(Lambda(lambda x: circular_padding(x, padding_size), input_shape=(28, 28, 1)))
     model.add(Conv2D(n_hidden, kernel_size=kernel_size, padding='valid', activation='relu'))
