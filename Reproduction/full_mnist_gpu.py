@@ -9,7 +9,7 @@ from tqdm import tqdm
 import os
 from art.utils import load_mnist
 from art.estimators.classification import TensorFlowV2Classifier
-
+import pickle
 
 
 # Set GPU devices
