@@ -78,7 +78,7 @@ n_hidden = 1000
 padding_sizes = [0, 2, 4, 6, 8, 10, 12, 14]
 padding_size = padding_sizes[5]
 
-@tf.function
+
 def train_step(model, optimizer, loss_object, images, labels):
     with tf.GradientTape() as tape:
         predictions = model(images, training=True)
