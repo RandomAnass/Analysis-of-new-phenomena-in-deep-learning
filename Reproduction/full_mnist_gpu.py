@@ -143,44 +143,37 @@ def create_art_classifier(model_creator, x_train, y_train, x_test, y_test, batch
     return [classifier, test_acc, train_acc, test_loss, train_loss]
 
 
-model_names = {'simple_FC_1024':simple_FC, 'simple_Conv_12_2048':simple_Conv}
+
+model_names = {'simple_FC_256':simple_FC, 'simple_Conv_10_512':simple_Conv, 'simple_Conv_NL':simple_Conv_NL, 'simple_Conv_max':simple_Conv_max,
+               'simple_FC_1024':simple_FC, 'simple_Conv_12_2048':simple_Conv}
 
 
 models = [
+    create_art_classifier(model_creator=simple_FC, x_train=x_train, y_train=y_train,  x_test=x_test, y_test=y_test, n_hidden=256),
+    create_art_classifier(model_creator=simple_Conv, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=512, kernel_size=10, padding_size=padding_size),
+    create_art_classifier(model_creator=simple_Conv_NL, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=512, kernel_size=10),
+    create_art_classifier(model_creator=simple_Conv_max, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=512, kernel_size=10, padding_size=padding_size),
     create_art_classifier(model_creator=simple_FC, x_train=x_train, y_train=y_train,  x_test=x_test, y_test=y_test, n_hidden=1024),
     create_art_classifier(model_creator=simple_Conv, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=2048, kernel_size=12, padding_size=padding_size)
 ]
+print("saving the models")
+for i, model in enumerate(models):
+    model_name = f'mnist_model_{i}.h5'
+    model[0].model.save(model_name)
 
-#model_names = {'simple_FC_256':simple_FC, 'simple_Conv_10_512':simple_Conv, 'simple_Conv_NL':simple_Conv_NL, 'simple_Conv_max':simple_Conv_max,
-#               'simple_FC_1024':simple_FC, 'simple_Conv_12_2048':simple_Conv}
-#
-#
-#models = [
-#    create_art_classifier(model_creator=simple_FC, x_train=x_train, y_train=y_train,  x_test=x_test, y_test=y_test, n_hidden=256),
-#    create_art_classifier(model_creator=simple_Conv, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=512, kernel_size=10, padding_size=padding_size),
-#    create_art_classifier(model_creator=simple_Conv_NL, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=512, kernel_size=10),
-#    create_art_classifier(model_creator=simple_Conv_max, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=512, kernel_size=10, padding_size=padding_size),
-#    create_art_classifier(model_creator=simple_FC, x_train=x_train, y_train=y_train,  x_test=x_test, y_test=y_test, n_hidden=1024),
-#    create_art_classifier(model_creator=simple_Conv, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=2048, kernel_size=12, padding_size=padding_size)
-#]
-#print("saving the models")
-#for i, model in enumerate(models):
-#    model_name = f'mnist_model_{i}.h5'
-#    model[0].model.save(model_name)
-#
-#
-#array_models = np.array(models)
-#acc_array = array_models[:, [1,2]]
-#loss_array = array_models[:, [3,4]]
-#
-## Save the models list to a file
-#with open('mnist_acc_array.pkl', 'wb') as file:
-#    pickle.dump(acc_array, file)
-#with open('mnist_loss_array.pkl', 'wb') as file:
-#    pickle.dump(loss_array, file)
-#with open('mnist_full_np.pkl', 'wb') as file:
-#    pickle.dump(array_models, file)
-#print("done saving models")
+
+array_models = np.array(models)
+acc_array = array_models[:, [1,2]]
+loss_array = array_models[:, [3,4]]
+
+# Save the models list to a file
+with open('mnist_acc_array.pkl', 'wb') as file:
+    pickle.dump(acc_array, file)
+with open('mnist_loss_array.pkl', 'wb') as file:
+    pickle.dump(loss_array, file)
+with open('mnist_full_np.pkl', 'wb') as file:
+    pickle.dump(array_models, file)
+print("done saving models")
 
 
 print("creating adversarial data")
@@ -207,9 +200,6 @@ for model, model_name in zip(models, model_names.keys()):
     # Iterate over the attack parameters and generate adversarial examples
     for norm, epsilons in attack_params:
         for epsilon in epsilons:
-            if norm == np.inf and model_name == "simple_FC_1024":
-                print("skipping")
-                continue
             if norm == 2:
                 attack = FastGradientMethod(estimator=classifier, eps=epsilon, norm=norm)
             else:
