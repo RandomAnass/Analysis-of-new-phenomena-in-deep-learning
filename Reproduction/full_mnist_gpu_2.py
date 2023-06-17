@@ -71,8 +71,19 @@ def simple_Conv_max(n_hidden, kernel_size=10,padding_size=0):
 
     return model
 
-model_names = {'simple_FC_256':simple_FC, 'simple_Conv_10_512':simple_Conv, 'simple_Conv_NL':simple_Conv_NL, 'simple_Conv_max':simple_Conv_max,
-               'simple_FC_1024':simple_FC, 'simple_Conv_12_2048':simple_Conv}
+def simple_Conv_2():
+    model = tf.keras.Sequential([
+        layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+        layers.MaxPooling2D((2, 2)),
+        layers.Conv2D(64, (3, 3), activation='relu'),
+        layers.MaxPooling2D((2, 2)),
+        layers.Flatten(),
+        layers.Dense(128, activation='relu'),
+        layers.Dense(10)
+    ])
+
+    return model
+
 
 n_hidden = 1000
 padding_sizes = [0, 2, 4, 6, 8, 10, 12, 14]
@@ -144,9 +155,9 @@ def create_art_classifier(model_creator, x_train, y_train, x_test, y_test, batch
 
 
 
-model_names = {'simple_FC_256':simple_FC, 'simple_Conv_10_512':simple_Conv, 'simple_Conv_NL':simple_Conv_NL, 'simple_Conv_max':simple_Conv_max,
-               'simple_FC_1024':simple_FC, 'simple_Conv_12_2048':simple_Conv}
 
+model_names = {'simple_FC_256':simple_FC, 'simple_Conv_10_512':simple_Conv, 'simple_Conv_NL':simple_Conv_NL, 'simple_Conv_max':simple_Conv_max,
+               'simple_FC_1024':simple_FC, 'simple_Conv_12_2048':simple_Conv,'simple_Conv_2':simple_Conv_2}
 
 models = [
     create_art_classifier(model_creator=simple_FC, x_train=x_train, y_train=y_train,  x_test=x_test, y_test=y_test, n_hidden=256),
@@ -154,7 +165,9 @@ models = [
     create_art_classifier(model_creator=simple_Conv_NL, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=512, kernel_size=10),
     create_art_classifier(model_creator=simple_Conv_max, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=512, kernel_size=10, padding_size=padding_size),
     create_art_classifier(model_creator=simple_FC, x_train=x_train, y_train=y_train,  x_test=x_test, y_test=y_test, n_hidden=1024),
-    create_art_classifier(model_creator=simple_Conv, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=2048, kernel_size=12, padding_size=padding_size)
+    create_art_classifier(model_creator=simple_Conv, x_train=x_train, y_train=y_train,x_test=x_test, y_test=y_test, n_hidden=2048, kernel_size=12, padding_size=padding_size),
+    create_art_classifier(model_creator=simple_FC, x_train=x_train, y_train=y_train,  x_test=x_test, y_test=y_test)
+
 ]
 print("saving the models")
 for i, model in enumerate(models):
