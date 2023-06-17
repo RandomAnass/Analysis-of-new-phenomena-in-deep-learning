@@ -201,9 +201,9 @@ for model, model_name in zip(models, model_names.keys()):
     for norm, epsilons in attack_params:
         for epsilon in epsilons:
             if norm == 2:
-                attack = ProjectedGradientDescentTensorFlowV2(estimator=classifier, eps=epsilon,eps_step=epsilon/5,max_iter=5, norm=norm)
+                attack = ProjectedGradientDescentTensorFlowV2(estimator=classifier, eps=epsilon,eps_step=epsilon/5, max_iter=10, batch_size=100, norm=norm)
             else:
-                attack = ProjectedGradientDescentTensorFlowV2(estimator=classifier, eps=epsilon,eps_step=epsilon/5,max_iter=5, norm=norm)
+                attack = ProjectedGradientDescentTensorFlowV2(estimator=classifier, eps=epsilon,eps_step=epsilon/5,max_iter=10, batch_size=100, norm=norm)
 
             attack_name = attack.__class__.__name__
 
