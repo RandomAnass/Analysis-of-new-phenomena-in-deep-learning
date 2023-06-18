@@ -59,10 +59,11 @@ def simple_Conv(n_hidden, kernel_size=10, padding_size=-1):
 
     return model
 
-def simple_FC(n_hidden):
+def simple_FC(n_hidden, n_units = 2):
     model = Sequential()
     model.add(Flatten(input_shape=(28, 28)))
-    model.add(Dense(n_hidden, activation="relu"))
+    for i in range(n_units):
+        model.add(Dense(n_hidden, activation="relu"))
     model.add(Dense(10))
 
     return model
