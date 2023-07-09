@@ -1,20 +1,19 @@
 import tensorflow as tf
 import numpy as np
-from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, ReLU, GlobalAveragePooling2D, Dense, Lambda, Flatten, GlobalMaxPooling2D, MaxPooling2D, AveragePooling2D
-from art.estimators.classification import TensorFlowV2Classifier
 from art.attacks.evasion import FastGradientMethod, ProjectedGradientDescentTensorFlowV2
 from tqdm import tqdm
 import os
-from art.utils import load_mnist
 from tests.utils import master_seed
 from art.estimators.classification import TensorFlowV2Classifier
 import pickle
 
 
 
-""" changed max_iter to 100 and epochs to 20 and data to max instead of 1/6 """
+""" changed max_iter to 100 and epochs
+ to 20 and data to max instead of 1/6 """
+
 print("seed: 420")
 master_seed(420)
 # Set GPU devices
@@ -51,6 +50,7 @@ print("data processed")
 print("testing mode?")
 testing_mode = str(input("testing mode ? T or F"))
 print("given answer: ", testing_mode)
+
 if testing_mode == "T":
     print("Testing mode")
     x_train = x_train[:400]
