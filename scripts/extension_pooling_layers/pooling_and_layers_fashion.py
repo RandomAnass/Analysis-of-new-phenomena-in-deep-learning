@@ -365,40 +365,41 @@ for n_layers in n_layers_list:
                 models.append(model)
                 tf.keras.backend.clear_session()
 
+if testing_mode == "T":
+    print("Testing done")
+else:
+    print("Saving the models")
+    for i, model in enumerate(models):
+        model_name = f'{list(model_names.keys())[i]}.h5'
+        model[0].model.save(model_name)
+
+    array_models = np.array(models)
+    acc_array = array_models[:, [1,2]]
+    loss_array = array_models[:, [3,4]]
+
+    # Save the models list to a file
+    with open('fashion_mnist_acc_array.pkl', 'wb') as file:
+        pickle.dump(acc_array, file)
+    with open('fashion_mnist_loss_array.pkl', 'wb') as file:
+        pickle.dump(loss_array, file)
+    with open('fashion_mnist_full_np.pkl', 'wb') as file:
+        pickle.dump(array_models, file)
+    print("done saving models")
 
 
-print("Saving the models")
-for i, model in enumerate(models):
-    model_name = f'{list(model_names.keys())[i]}.h5'
-    model[0].model.save(model_name)
-
-array_models = np.array(models)
-acc_array = array_models[:, [1,2]]
-loss_array = array_models[:, [3,4]]
-
-# Save the models list to a file
-with open('fashion_mnist_acc_array.pkl', 'wb') as file:
-    pickle.dump(acc_array, file)
-with open('fashion_mnist_loss_array.pkl', 'wb') as file:
-    pickle.dump(loss_array, file)
-with open('fashion_mnist_full_np.pkl', 'wb') as file:
-    pickle.dump(array_models, file)
-print("done saving models")
 
 
 
+    print("Done Attack data created")
+    # Save the accuracy data
+    with open('fashion_mnist_accuracy_data.pkl', 'wb') as file:
+        pickle.dump(accuracy_data, file)
 
+    # Save the model names
+    with open('fashion_mnist_model_names.pkl', 'wb') as file:
+        pickle.dump(model_names, file)
 
-print("Done Attack data created")
-# Save the accuracy data
-with open('fashion_mnist_accuracy_data.pkl', 'wb') as file:
-    pickle.dump(accuracy_data, file)
-
-# Save the model names
-with open('fashion_mnist_model_names.pkl', 'wb') as file:
-    pickle.dump(model_names, file)
-
-print("Done creating attack data")
+    print("Done creating attack data")
 
 
 
@@ -407,10 +408,12 @@ print("starting consistency")
 
 
 model_consistency_dict = evaluate_shift_consistency(models,list(model_names.keys()), x_test)
-
-print("saving model_consistency_dict")
-# Save the model_consistency_dict
-with open('fashion_mnist_model_consistency_dict.pkl', 'wb') as file:
-    pickle.dump(model_consistency_dict, file)
+if testing_mode == "T":
+    print(model_consistency_dict)
+else:
+    print("saving model_consistency_dict")
+    # Save the model_consistency_dict
+    with open('fashion_mnist_model_consistency_dict.pkl', 'wb') as file:
+        pickle.dump(model_consistency_dict, file)
 
 print("Done")
