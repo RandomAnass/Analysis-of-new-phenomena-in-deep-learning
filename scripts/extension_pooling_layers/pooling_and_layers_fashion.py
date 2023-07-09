@@ -52,10 +52,11 @@ print("testing mode?")
 testing_mode = str(input("testing mode ? T or F"))
 print("given answer: ", testing_mode)
 if testing_mode == "T":
+    print("Testing mode")
     x_train = x_train[:400]
-    x_test = x_test[:20]
+    x_test = x_test[:5]
     y_train = y_train[:400]
-    y_test = y_test[:20]
+    y_test = y_test[:5]
 elif testing_mode == "F":
     print("Training mode")
 else:
