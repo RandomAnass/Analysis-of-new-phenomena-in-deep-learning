@@ -176,7 +176,7 @@ def create_art_classifier(model_creator, x_train, y_train, x_test, y_test, batch
     return [classifier, test_acc, train_acc, test_loss, train_loss]
 
 
-def evaluate_shift_consistency(models,model_names, x_test,max_shift=10):
+def evaluate_shift_consistency_batch(models,model_names, x_test,max_shift=10):
     """ Evaluate shift consistency of models
     we can use predict directly but predict_on_batch is much faster, except it requires more memory"""
     model_consistency_dict = {}
@@ -230,6 +230,46 @@ def evaluate_shift_consistency(models,model_names, x_test,max_shift=10):
         model_consistency_dict[model_name] = model_consistency
 
     return model_consistency_dict
+
+def evaluate_shift_consistency(models, model_names, x_test, max_shift=10):
+    """Evaluate shift consistency of models.
+    We can use predict directly, but predict_on_batch is much faster, except it requires more memory."""
+    model_consistency_dict = {}
+
+    for model_name, model in zip(model_names, models):
+        print(model_name)
+        model_consistency = 0
+        model_total = 0
+
+        shift0 = np.random.randint(max_shift, size=(len(x_test), 2))
+        shift1 = np.random.randint(max_shift, size=(len(x_test), 2))
+
+        inputs_shift_v0 = np.zeros_like(x_test)
+        inputs_shift_hv0 = np.zeros_like(x_test)
+        inputs_shift_v1 = np.zeros_like(x_test)
+        inputs_shift_hv1 = np.zeros_like(x_test)
+
+        for i in range(len(x_test)):
+            image = x_test[i]
+
+            inputs_shift_v0[i, :, :shift0[i, 0], :] = image[:, (image.shape[1] - shift0[i, 0]):, :].copy()
+            inputs_shift_v0[i, :, shift0[i, 0]:, :] = image[:, :(image.shape[1] - shift0[i, 0]), :].copy()
+            inputs_shift_hv0[i, :shift0[i, 1], :, :] = inputs_shift_v0[i, (inputs_shift_v0.shape[1] - shift0[i, 1]):, :, :]
+            inputs_shift_hv0[i, shift0[i, 1]:, :, :] = inputs_shift_v0[i, :(inputs_shift_v0.shape[1] - shift0[i, 1]), :, :]
+
+            inputs_shift_v1[i, :, :shift1[i, 0], :] = image[:, (image.shape[1] - shift1[i, 0]):, :].copy()
+            inputs_shift_v1[i, :, shift1[i, 0]:, :] = image[:, :(image.shape[1] - shift1[i, 0]), :].copy()
+            inputs_shift_hv1[i, :shift1[i, 1], :, :] = inputs_shift_v1[i, (inputs_shift_v1.shape[1] - shift1[i, 1]):, :, :]
+            inputs_shift_hv1[i, shift1[i, 1]:, :, :] = inputs_shift_v1[i, :(inputs_shift_v1.shape[1] - shift1[i, 1]), :, :]
+
+        predicted0 = np.argmax(model[0].predict(inputs_shift_hv0, verbos=0), axis=1)
+        predicted1 = np.argmax(model[0].predict(inputs_shift_hv1, verbos=0), axis=1)
+
+        model_consistency = np.sum(predicted0 == predicted1) / len(x_test)
+        model_consistency_dict[model_name] = model_consistency
+
+    return model_consistency_dict
+
 ##################################################
 
 print("params")
@@ -407,8 +447,11 @@ else:
 print("starting consistency")
 
 
+try:
+    model_consistency_dict = evaluate_shift_consistency_batch(models,list(model_names.keys()), x_test)
+except:
+    model_consistency_dict = evaluate_shift_consistency(models,list(model_names.keys()), x_test)
 
-model_consistency_dict = evaluate_shift_consistency(models,list(model_names.keys()), x_test)
 if testing_mode == "T":
     print(model_consistency_dict)
 else:
