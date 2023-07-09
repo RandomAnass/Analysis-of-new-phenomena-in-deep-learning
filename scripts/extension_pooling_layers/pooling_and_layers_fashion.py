@@ -52,8 +52,8 @@ print("testing mode?")
 testing_mode = str(input("testing mode ? T or F"))
 print("given answer: ", testing_mode)
 if testing_mode == "T":
-    x_train = x_train[:20]
-    x_test = x_test[:20]
+    x_train = x_train[:200]
+    x_test = x_test[:200]
     y_train = y_test[:10]
     y_test = y_test[:10]
 elif testing_mode == "F":
@@ -274,7 +274,6 @@ for n_layers in n_layers_list:
         for max_pooling in max_pooling_list:
             for kernel_size in kernel_size_list:
                 model_name = f"simple_Conv_{n_layers}_{max_pooling}_{kernel_size}_{add_dense}"
-                print("Training: ", model_name)
                 model_names[model_name] = simple_Conv
 accuracy_data = {norm: {model: [] for model in list(model_names.keys())} for norm in norms}
 
