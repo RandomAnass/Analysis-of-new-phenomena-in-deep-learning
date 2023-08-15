@@ -1,8 +1,6 @@
 adversarial_robustness_toolbox==1.14.1
 matplotlib==3.5.3
 numpy==1.23.5
-Pillow==9.5.0
-Pillow==9.5.0
 tensorflow==2.10.0
 tensorflow_intel==2.12.0
 torch==2.0.1+cu118
@@ -10,3 +8,16 @@ torch==2.0.1
 torchvision==0.15.2+cu118
 torchvision==0.15.2
 tqdm==4.64.1
+adjustText==0.8
+adversarial_robustness_toolbox==1.14.1
+advertorch==0.2.3
+eagerpy==0.30.0
+foolbox==3.3.3
+huggingface_hub==0.16.4
+ipdb==0.13.13
+Pillow==10.0.0
+plotly==5.14.1
+scikit_learn==1.1.3
+scipy==1.9.3
+seaborn==0.12.2
+
